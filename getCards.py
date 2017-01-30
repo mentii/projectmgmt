@@ -1,6 +1,7 @@
 import sys
 import requests
 import ConfigParser
+import csv
 
 issuesURL =   'https://api.github.com/repos/mentii/mentii/issues'
 projectsURL =  'https://api.github.com/repos/mentii/mentii/projects'
@@ -17,37 +18,51 @@ s.headers.update({'Accept': 'application/vnd.github.inertia-preview+json'})
 response = s.get(projectsURL)
 projects = response.json()
 
-for p in projects:
-    print p['name']
-    columnsURL =  p['columns_url']
-    response = s.get(columnsURL)
-    columns = response.json()
+with open('stories.csv', 'wt') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow( ('Name', 'Points') )
 
-    pointsPerCol = {}
+    for p in projects:
+        print p['name']
+        columnsURL =  p['columns_url']
+        response = s.get(columnsURL)
+        columns = response.json()
 
-    for col in columns:
-        colName = col['name']
-        print '\t', colName
-        cardURL =  col['cards_url']
-        response = s.get(cardURL)
-        cards = response.json()
-        colPoints = 0
+        columnPoints = {}
 
-        for card in cards:
-            note = card['note']
-            if not note:
-                contentURL = card['content_url']
-                response = s.get(contentURL)
-                content = response.json()
-                note = content['title']
-            divide = note.rfind("(")
-            name = note[:divide]
-            points = note[divide+1:-1]
-            points = int(points)
-            colPoints += points
-            print '\t\t', name, points
+        for col in columns:
+            colName = col['name']
+            print '\t', colName
+            writer.writerow('')
+            writer.writerow([colName])
 
-        print '\t', 'Total', colName, 'Points:', colPoints, '\n'
-        pointsPerCol[colName] = colPoints
+            cardURL =  col['cards_url']
+            response = s.get(cardURL)
+            cards = response.json()
+            colPoints = 0
 
-print pointsPerCol
+            for card in cards:
+                note = card['note']
+                if not note:
+                    contentURL = card['content_url']
+                    response = s.get(contentURL)
+                    content = response.json()
+                    note = content['title']
+                divide = note.rfind("(")
+                name = note[:divide]
+                points = note[divide+1:-1]
+                points = int(points)
+                colPoints += points
+                print '\t\t', name, points
+                writer.writerow([name, points])
+
+            print '\t', 'Total', colName, 'Points:', colPoints, '\n'
+            columnPoints[colName] = colPoints
+
+        print columnPoints
+
+# with open('backlog.csv', 'wb') as csvfile:
+#     spamwriter = csv.writer(csvfile, delimiter=' ',
+#                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
+#     spamwriter.writerow()
+#     spamwriter.writerow(['Spam', 'Lovely Spam', 'Wonderful Spam'])
