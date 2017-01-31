@@ -3,7 +3,6 @@ import requests
 import ConfigParser
 import csv
 
-issuesURL =   'https://api.github.com/repos/mentii/mentii/issues'
 projectsURL =  'https://api.github.com/repos/mentii/mentii/projects'
 
 configFile = sys.argv[1]
@@ -60,9 +59,3 @@ with open('stories.csv', 'wt') as csvfile:
             columnPoints[colName] = colPoints
 
         print columnPoints
-
-# with open('backlog.csv', 'wb') as csvfile:
-#     spamwriter = csv.writer(csvfile, delimiter=' ',
-#                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
-#     spamwriter.writerow()
-#     spamwriter.writerow(['Spam', 'Lovely Spam', 'Wonderful Spam'])
