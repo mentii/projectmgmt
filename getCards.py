@@ -2,6 +2,7 @@ import sys
 import requests
 import ConfigParser
 import csv
+import re
 
 projectsURL =  'https://api.github.com/repos/mentii/mentii/projects'
 
@@ -47,11 +48,15 @@ with open('stories.csv', 'wt') as csvfile:
                     response = s.get(contentURL)
                     content = response.json()
                     note = content['title']
-                divide = note.rfind("(")
-                name = note[:divide]
-                points = note[divide+1:-1]
-                points = int(points)
-                colPoints += points
+                note = note.rsplit('(', 1)
+                name = note[0]
+                points = note[1]
+                points = re.sub('[^0-9]', '', points)
+                if points:
+                    points = int(points)
+                    colPoints += points
+                else:
+                    print '*#### NO POINTS: ', name, ' ####*'
                 print '\t\t', name, points
                 writer.writerow([name, points])
 
