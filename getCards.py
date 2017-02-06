@@ -20,7 +20,7 @@ projects = response.json()
 
 with open('stories.csv', 'wt') as csvfile:
     writer = csv.writer(csvfile)
-    writer.writerow( ('Name', 'Points') )
+    writer.writerow( ('#', 'Name', 'Points') )
 
     for p in projects:
         print p['name']
@@ -43,11 +43,13 @@ with open('stories.csv', 'wt') as csvfile:
 
             for card in cards:
                 note = card['note']
+                number = ''
                 if not note:
                     contentURL = card['content_url']
                     response = s.get(contentURL)
                     content = response.json()
                     note = content['title']
+                    number = content['number']
                 note = note.rsplit('(', 1)
                 name = note[0]
                 points = note[1]
@@ -58,7 +60,7 @@ with open('stories.csv', 'wt') as csvfile:
                 else:
                     print '*#### NO POINTS: ', name, ' ####*'
                 print '\t\t', name, points
-                writer.writerow([name, points])
+                writer.writerow([number, name, points])
 
             print '\t', 'Total', colName, 'Points:', colPoints, '\n'
             columnPoints[colName] = colPoints
