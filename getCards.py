@@ -52,15 +52,19 @@ with open('stories.csv', 'wt') as csvfile:
                     number = content['number']
                 note = note.rsplit('(', 1)
                 name = note[0]
-                points = note[1]
-                points = re.sub('[^0-9]', '', points)
+                points = None
+                if len(note) == 2:
+                    points = note[1]
+                    points = re.sub('[^0-9]', '', points)
                 if points:
                     points = int(points)
                     colPoints += points
+                    print '\t\t', name, points
+                    writer.writerow([number, name, points])
                 else:
-                    print '*#### NO POINTS: ', name, ' ####*'
-                print '\t\t', name, points
-                writer.writerow([number, name, points])
+                    print '#### NO POINTS: ####'
+                    print name,
+                    print '#### NO POINTS: ####'
 
             print '\t', 'Total', colName, 'Points:', colPoints, '\n'
             columnPoints[colName] = colPoints
